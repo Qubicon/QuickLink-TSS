@@ -17,6 +17,11 @@ namespace QuickLink.Database
             modelBuilder.Entity<Url>()
                 .Property(u => u.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
+
+            modelBuilder.Entity<Url>(builder =>
+            {
+                builder.HasIndex(s => s.Code).IsUnique();
+            });
         }
     }
 

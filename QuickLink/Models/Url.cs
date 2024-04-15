@@ -9,12 +9,19 @@ namespace QuickLink.Models
 
         [Required]
         [Url]
-        [MaxLength(256)]
+        [MaxLength(512)]
         public string OriginalUrl { get; set; }
 
-        [Required]
         [StringLength(8)]
+        [Required]
+        public string Code { get; set; }
+
+
+        [Required]
+        [Url]
         public string ShortenedUrl { get; set; }
+
+
 
         [Required]
         public DateTime CreatedAt { get; set; }

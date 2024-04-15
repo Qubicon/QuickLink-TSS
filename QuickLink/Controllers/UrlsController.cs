@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using QuickLink.Database;
 using QuickLink.Dtos;
 using QuickLink.Models;
+using QuickLink.Services;
 
 namespace QuickLink.Controllers
 {
@@ -10,10 +12,12 @@ namespace QuickLink.Controllers
     public class UrlsController : ControllerBase
     {
         private readonly QLDbContext _dbContext;
+        private readonly UrlShorteningService _urlShorteningService;
 
-        public UrlsController(QLDbContext dbContext)
+        public UrlsController(QLDbContext dbContext, UrlShorteningService urlShorteningService)
         {
             _dbContext = dbContext;
+            _urlShorteningService = urlShorteningService;
         }
 
         [HttpGet("urls")]
@@ -23,22 +27,22 @@ namespace QuickLink.Controllers
             return Ok(urls);
         }
 
-        [HttpPost("short")]
-        public async Task<ActionResult<UrlDto>> ShortenUrl(UrlDto urlRequest)
+        [HttpPost("url")]
+        public async Task<ActionResult<UrlResponseDto>> ShortenUrl([FromBody] UrlCreationRequestDto urlCreationRequest)
         {
-            // TODO 
-            var shortenedUrl = GenerateRandomString(8);
+            var randomCode = await _urlShorteningService.GenerateRandomString();
 
             var url = new Url
             {
-                OriginalUrl = urlRequest.OriginalUrl,
-                ShortenedUrl = shortenedUrl,
+                OriginalUrl = urlCreationRequest.OriginalUrl,
+                Code = randomCode,
+                ShortenedUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/v1/{randomCode}"
             };
 
             _dbContext.UrlsTable.Add(url);
             await _dbContext.SaveChangesAsync();
 
-            var responseDto = new UrlDto
+            var responseDto = new UrlResponseDto
             {
                 OriginalUrl = url.OriginalUrl,
                 ShortenedUrl = url.ShortenedUrl
@@ -47,12 +51,17 @@ namespace QuickLink.Controllers
             return Ok(responseDto);
         }
 
-        // Helper method to generate a random string for shortened URL
-        private string GenerateRandomString(int length)
+        [HttpGet("{code}")]
+        public async Task<IActionResult> RedirectToOriginalUrl(string code)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var random = new Random();
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+            var url = await _dbContext.UrlsTable.FirstOrDefaultAsync(s => s.Code == code);
+
+            if (url == null)
+            {
+                return NotFound();
+            }
+            return Redirect(url.OriginalUrl);
         }
+
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using QuickLink.Database;
+using QuickLink.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ else
 builder.Services.AddDbContext<QLDbContext>(options =>
     options.UseSqlServer(connection));
 
+builder.Services.AddScoped<UrlShorteningService>();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -32,6 +35,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseRouting();
 
 app.UseHttpsRedirection();
 
