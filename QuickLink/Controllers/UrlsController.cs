@@ -9,16 +9,10 @@ namespace QuickLink.Controllers
 {
     [Route("api/v1")]
     [ApiController]
-    public class UrlsController : ControllerBase
+    public class UrlsController(QLDbContext dbContext, UrlShorteningService urlShorteningService) : ControllerBase
     {
-        private readonly QLDbContext _dbContext;
-        private readonly UrlShorteningService _urlShorteningService;
-
-        public UrlsController(QLDbContext dbContext, UrlShorteningService urlShorteningService)
-        {
-            _dbContext = dbContext;
-            _urlShorteningService = urlShorteningService;
-        }
+        private readonly QLDbContext _dbContext = dbContext;
+        private readonly UrlShorteningService _urlShorteningService = urlShorteningService;
 
         [HttpGet("urls")]
         public IActionResult GetAllUrls()

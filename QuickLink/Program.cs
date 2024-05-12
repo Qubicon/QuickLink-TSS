@@ -16,7 +16,16 @@ else
 }
 
 builder.Services.AddDbContext<QLDbContext>(options =>
-    options.UseSqlServer(connection));
+{
+    options.UseSqlServer(connection, sqlServerOptions =>
+    {
+        sqlServerOptions.EnableRetryOnFailure(
+            maxRetryCount: 2,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null
+        );
+    });
+});
 
 builder.Services.AddScoped<UrlShorteningService>();
 
