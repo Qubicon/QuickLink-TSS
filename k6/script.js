@@ -1,9 +1,8 @@
 import http from 'k6/http';
 import { check } from 'k6';
-import test from './test';
 
 export default function () {
-  let res = http.get('https://localhost:32768/api/v1/urls', {
+  let res = http.get('https://localhost:32770/api/v1/urls', {
     tls_skip_verify: true,
   });
 
