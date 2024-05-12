@@ -5,5 +5,7 @@
 securitate et al.) care să fie rulate de către roboți.
 
 # QuickLink - Demo
-https://github.com/Qubicon/QuickLink-TSS/assets/58084950/6f538ed6-387a-4e30-9fdd-660171f18b16
+
+
+https://github.com/Qubicon/QuickLink-TSS/assets/58084950/79f4f182-9c6e-4318-b5ba-e000d6a51be0
 
